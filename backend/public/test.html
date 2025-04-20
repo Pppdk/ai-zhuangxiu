@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家装梦想家 API 测试</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .response {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .error {
+            color: #ff0000;
+        }
+        .success {
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>家装梦想家 API 测试</h1>
+        
+        <!-- 用户注册 -->
+        <div class="section">
+            <h2>用户注册</h2>
+            <div class="form-group">
+                <label for="register-name">用户名：</label>
+                <input type="text" id="register-name" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label for="register-email">邮箱：</label>
+                <input type="email" id="register-email" placeholder="请输入邮箱">
+            </div>
+            <div class="form-group">
+                <label for="register-password">密码：</label>
+                <input type="password" id="register-password" placeholder="请输入密码">
+            </div>
+            <button onclick="register()">注册</button>
+            <div id="register-response" class="response"></div>
+        </div>
+
+        <!-- 用户登录 -->
+        <div class="section">
+            <h2>用户登录</h2>
+            <div class="form-group">
+                <label for="login-email">邮箱：</label>
+                <input type="email" id="login-email" placeholder="请输入邮箱">
+            </div>
+            <div class="form-group">
+                <label for="login-password">密码：</label>
+                <input type="password" id="login-password" placeholder="请输入密码">
+            </div>
+            <button onclick="login()">登录</button>
+            <div id="login-response" class="response"></div>
+        </div>
+
+        <!-- 创建需求 -->
+        <div class="section">
+            <h2>创建装修需求</h2>
+            <div class="form-group">
+                <label for="needs-type">房屋类型：</label>
+                <select id="needs-type">
+                    <option value="apartment">公寓</option>
+                    <option value="duplex">复式</option>
+                    <option value="villa">别墅</option>
+                    <option value="other">其他</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="needs-family">家庭成员（用逗号分隔）：</label>
+                <input type="text" id="needs-family" placeholder="例如：父母,孩子">
+            </div>
+            <div class="form-group">
+                <label for="needs-duration">装修时长（月）：</label>
+                <input type="number" id="needs-duration" value="3">
+            </div>
+            <div class="form-group">
+                <label for="needs-budget">装修预算（元）：</label>
+                <input type="number" id="needs-budget" value="200000">
+            </div>
+            <div class="form-group">
+                <label for="needs-pain">装修痛点（用逗号分隔）：</label>
+                <input type="text" id="needs-pain" placeholder="例如：储物空间不足,采光不好">
+            </div>
+            <div class="form-group">
+                <label for="needs-styles">装修风格（用逗号分隔）：</label>
+                <input type="text" id="needs-styles" placeholder="例如：现代简约,日式">
+            </div>
+            <div class="form-group">
+                <label for="needs-custom">特殊需求：</label>
+                <textarea id="needs-custom" rows="3" placeholder="请输入特殊需求"></textarea>
+            </div>
+            <button onclick="createNeeds()">提交需求</button>
+            <div id="needs-response" class="response"></div>
+        </div>
+
+        <!-- 生成设计方案 -->
+        <div class="section">
+            <h2>生成设计方案</h2>
+            <div class="form-group">
+                <label for="design-needs">需求ID：</label>
+                <input type="text" id="design-needs" placeholder="请输入需求ID">
+            </div>
+            <button onclick="generateDesign()">生成方案</button>
+            <div id="design-response" class="response"></div>
+        </div>
+    </div>
+
+    <script>
+        let token = '';
+        const API_BASE = 'http://localhost:3000/api';
+
+        // 用户注册
+        async function register() {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+                
+                const data = await response.json();
+                const responseElement = document.getElementById('register-response');
+                
+                if (response.ok) {
+                    responseElement.innerHTML = `注册成功！\n${JSON.stringify(data, null, 2)}`;
+                    responseElement.className = 'response success';
+                    token = data.data.token;
+                } else {
+                    responseElement.innerHTML = `注册失败：${data.message}`;
+                    responseElement.className = 'response error';
+                }
+            } catch (error) {
+                document.getElementById('register-response').innerHTML = `错误：${error.message}`;
+                document.getElementById('register-response').className = 'response error';
+            }
+        }
+
+        // 用户登录
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                const responseElement = document.getElementById('login-response');
+                
+                if (response.ok) {
+                    responseElement.innerHTML = `登录成功！\n${JSON.stringify(data, null, 2)}`;
+                    responseElement.className = 'response success';
+                    token = data.data.token;
+                } else {
+                    responseElement.innerHTML = `登录失败：${data.message}`;
+                    responseElement.className = 'response error';
+                }
+            } catch (error) {
+                document.getElementById('login-response').innerHTML = `错误：${error.message}`;
+                document.getElementById('login-response').className = 'response error';
+            }
+        }
+
+        // 创建需求
+        async function createNeeds() {
+            if (!token) {
+                alert('请先登录！');
+                return;
+            }
+
+            const needs = {
+                basicInfo: {
+                    houseType: document.getElementById('needs-type').value,
+                    familyMembers: document.getElementById('needs-family').value.split(','),
+                    duration: parseInt(document.getElementById('needs-duration').value),
+                    budget: parseInt(document.getElementById('needs-budget').value)
+                },
+                painPoints: document.getElementById('needs-pain').value.split(','),
+                designStyles: document.getElementById('needs-styles').value.split(','),
+                customNeeds: document.getElementById('needs-custom').value,
+                roomPreferences: {
+                    "客厅": 5,
+                    "主卧": 4,
+                    "次卧": 3,
+                    "厨房": 5,
+                    "卫生间": 4
+                }
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/needs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(needs)
+                });
+                
+                const data = await response.json();
+                const responseElement = document.getElementById('needs-response');
+                
+                if (response.ok) {
+                    responseElement.innerHTML = `需求创建成功！\n需求ID：${data.data.needs._id}\n${JSON.stringify(data, null, 2)}`;
+                    responseElement.className = 'response success';
+                    document.getElementById('design-needs').value = data.data.needs._id;
+                } else {
+                    responseElement.innerHTML = `需求创建失败：${data.message}`;
+                    responseElement.className = 'response error';
+                }
+            } catch (error) {
+                document.getElementById('needs-response').innerHTML = `错误：${error.message}`;
+                document.getElementById('needs-response').className = 'response error';
+            }
+        }
+
+        // 生成设计方案
+        async function generateDesign() {
+            if (!token) {
+                alert('请先登录！');
+                return;
+            }
+
+            const needsId = document.getElementById('design-needs').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/designs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ needsId })
+                });
+                
+                const data = await response.json();
+                const responseElement = document.getElementById('design-response');
+                
+                if (response.ok) {
+                    responseElement.innerHTML = `设计方案生成成功！\n${JSON.stringify(data, null, 2)}`;
+                    responseElement.className = 'response success';
+                } else {
+                    responseElement.innerHTML = `设计方案生成失败：${data.message}`;
+                    responseElement.className = 'response error';
+                }
+            } catch (error) {
+                document.getElementById('design-response').innerHTML = `错误：${error.message}`;
+                document.getElementById('design-response').className = 'response error';
+            }
+        }
+    </script>
+</body>
+</html>

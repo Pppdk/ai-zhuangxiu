@@ -1,0 +1,100 @@
+.welcome-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
+}
+
+.welcome-content {
+  max-width: 1200px;
+  text-align: center;
+  color: #fff;
+}
+
+.welcome-content h1 {
+  color: #fff;
+  font-size: 48px;
+  margin-bottom: 24px;
+}
+
+.welcome-content .ant-typography {
+  color: #fff;
+  font-size: 20px;
+  margin-bottom: 48px;
+}
+
+.feature-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-top: 64px;
+}
+
+.feature-card {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  animation: float 6s ease-in-out infinite;
+}
+
+.feature-card .ant-card-head {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.feature-card .ant-card-head-title {
+  color: #fff;
+  font-size: 20px;
+}
+
+.feature-card .ant-card-body {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+}
+
+.feature-card:nth-child(2) {
+  animation-delay: 1s;
+}
+
+.feature-card:nth-child(3) {
+  animation-delay: 2s;
+}
+
+.feature-card:nth-child(4) {
+  animation-delay: 3s;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .welcome-container {
+    padding: 20px;
+  }
+
+  .welcome-content h1 {
+    font-size: 36px;
+  }
+
+  .welcome-content .ant-typography {
+    font-size: 16px;
+  }
+
+  .feature-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 动画效果 */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}

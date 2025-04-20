@@ -1,0 +1,191 @@
+.needs-exploration-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 20px;
+}
+
+.needs-exploration-content {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 800px;
+}
+
+.progress-indicator {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #e8e8e8;
+  margin: 0 8px;
+  transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+  background-color: #1890ff;
+  transform: scale(1.2);
+}
+
+.section-container {
+  margin: 30px 0;
+  min-height: 300px;
+}
+
+.section-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.section-description {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+/* 痛点卡片样式 */
+.pain-points-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.pain-point-card {
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.pain-point-card:hover {
+  transform: translateY(-5px);
+}
+
+.pain-point-card.selected {
+  border-color: #1890ff;
+  background-color: #e6f7ff;
+}
+
+.pain-point-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.pain-point-text {
+  color: #333;
+  font-size: 14px;
+}
+
+/* 房间偏好样式 */
+.room-preferences-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.room-preference-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+.room-icon {
+  font-size: 24px;
+  margin-right: 15px;
+}
+
+.room-name {
+  flex: 1;
+  font-size: 16px;
+  color: #333;
+}
+
+/* 风格选择样式 */
+.style-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.style-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.style-card:hover {
+  transform: translateY(-5px);
+}
+
+.style-card.selected {
+  border-color: #1890ff;
+  background-color: #e6f7ff;
+}
+
+.style-card h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.style-card p {
+  color: #666;
+  font-size: 14px;
+}
+
+/* 自定义需求样式 */
+.custom-needs-section {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.custom-needs-input {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* 导航按钮样式 */
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+  .needs-exploration-content {
+    padding: 20px;
+  }
+
+  .pain-points-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .style-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .room-preference-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .room-icon {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}
