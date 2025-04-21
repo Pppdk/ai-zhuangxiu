@@ -4,10 +4,11 @@ import { motion } from 'framer-motion';
 import { Typography, Card, Space, Button, Slider, Tag } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
+import PageTransition from '../../components/PageTransition';
 
 const { Title, Text } = Typography;
 
-const PageContainer = styled.div`
+const PageContainer = styled(motion.div)`
   min-height: 100vh;
   background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
   padding: 24px;
@@ -66,6 +67,26 @@ const NavigationButtons = styled.div`
   margin-top: 48px;
 `;
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6 },
+  },
+};
+
 const BasicInfo: React.FC = () => {
   const navigate = useNavigate();
   const [houseType, setHouseType] = useState('');
@@ -104,7 +125,14 @@ const BasicInfo: React.FC = () => {
   };
 
   const handleNext = () => {
-    // 保存数据
+    // 分别保存各项数据
+    localStorage.setItem("houseType", houseType);
+    localStorage.setItem("size", "100"); // 添加默认面积
+    localStorage.setItem("familySize", String(familyMembers.length));
+    localStorage.setItem("budget", String(budget));
+    localStorage.setItem("timeline", `${duration}个月`);
+    
+    // 保存完整的基本信息对象（用于其他用途）
     const basicInfo = {
       houseType,
       purpose,
@@ -112,127 +140,146 @@ const BasicInfo: React.FC = () => {
       duration,
       budget
     };
-    localStorage.setItem('basicInfo', JSON.stringify(basicInfo));
-    navigate('/onboarding/style-explorer');
+    localStorage.setItem("basicInfo", JSON.stringify(basicInfo));
+    
+    navigate("/onboarding/style-explorer");
   };
 
   return (
-    <PageContainer>
-      <ContentBox
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+    <PageTransition>
+      <PageContainer
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
-        <Title level={2} style={{ textAlign: 'center', marginBottom: 40 }}>
-          让我们了解一下你的基本需求
-        </Title>
+        <ContentBox>
+          <motion.div variants={itemVariants}>
+            <Title level={2} style={{ textAlign: 'center', marginBottom: 40 }}>
+              让我们了解一下你的基本需求
+            </Title>
+          </motion.div>
 
-        <StyledCard>
-          <Title level={4}>你想装扮的是哪种住所呢？</Title>
-          <HouseTypeGrid>
-            {houseTypes.map(type => (
-              <HouseTypeCard
-                key={type.key}
-                selected={houseType === type.key}
-                onClick={() => setHouseType(type.key)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div style={{ fontSize: 32 }}>{type.icon}</div>
-                <Text>{type.label}</Text>
-              </HouseTypeCard>
-            ))}
-          </HouseTypeGrid>
-        </StyledCard>
+          <motion.div variants={itemVariants}>
+            <StyledCard>
+              <Title level={4}>你想装扮的是哪种住所呢？</Title>
+              <HouseTypeGrid>
+                {houseTypes.map(type => (
+                  <HouseTypeCard
+                    key={type.key}
+                    selected={houseType === type.key}
+                    onClick={() => setHouseType(type.key)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div style={{ fontSize: 32 }}>{type.icon}</div>
+                    <Text>{type.label}</Text>
+                  </HouseTypeCard>
+                ))}
+              </HouseTypeGrid>
+            </StyledCard>
+          </motion.div>
 
-        <StyledCard>
-          <Title level={4}>这个家对你来说意味着什么？</Title>
-          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            {purposes.map(p => (
+          <motion.div variants={itemVariants}>
+            <StyledCard>
+              <Title level={4}>这个家对你来说意味着什么？</Title>
+              <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+                {purposes.map(p => (
+                  <Button
+                    key={p.key}
+                    type={purpose === p.key ? 'primary' : 'default'}
+                    onClick={() => setPurpose(p.key)}
+                    style={{ height: 'auto', padding: '12px', width: '100%', textAlign: 'left' }}
+                  >
+                    {p.label}
+                  </Button>
+                ))}
+              </Space>
+            </StyledCard>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <StyledCard>
+              <Title level={4}>有哪些家庭成员会一起生活？</Title>
+              <FamilyMemberTags>
+                {memberOptions.map(member => (
+                  <Tag
+                    key={member.key}
+                    color={familyMembers.includes(member.key) ? 'blue' : 'default'}
+                    onClick={() => toggleMember(member.key)}
+                    style={{ padding: '8px 16px', fontSize: 14, cursor: 'pointer' }}
+                  >
+                    {member.label}
+                  </Tag>
+                ))}
+              </FamilyMemberTags>
+            </StyledCard>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <StyledCard>
+              <Title level={4}>装修大概计划多久完成？</Title>
+              <Slider
+                min={1}
+                max={12}
+                value={duration}
+                onChange={setDuration}
+                marks={{
+                  1: '1个月',
+                  3: '3个月',
+                  6: '半年',
+                  12: '1年'
+                }}
+              />
+            </StyledCard>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <StyledCard>
+              <Title level={4}>心理预算大致在哪个范围？</Title>
+              <Slider
+                min={5}
+                max={50}
+                value={budget}
+                onChange={setBudget}
+                marks={{
+                  5: '5万',
+                  10: '10万',
+                  20: '20万',
+                  50: '50万+'
+                }}
+              />
+            </StyledCard>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <NavigationButtons>
               <Button
-                key={p.key}
-                type={purpose === p.key ? 'primary' : 'default'}
-                onClick={() => setPurpose(p.key)}
-                style={{ height: 'auto', padding: '12px', width: '100%', textAlign: 'left' }}
+                size="large"
+                icon={<LeftOutlined />}
+                onClick={() => navigate('/onboarding')}
               >
-                {p.label}
+                返回
               </Button>
-            ))}
-          </Space>
-        </StyledCard>
-
-        <StyledCard>
-          <Title level={4}>有哪些家庭成员会一起生活？</Title>
-          <FamilyMemberTags>
-            {memberOptions.map(member => (
-              <Tag
-                key={member.key}
-                color={familyMembers.includes(member.key) ? 'blue' : 'default'}
-                onClick={() => toggleMember(member.key)}
-                style={{ padding: '8px 16px', fontSize: 14, cursor: 'pointer' }}
+              <Button
+                type="primary"
+                size="large"
+                icon={<RightOutlined />}
+                onClick={handleNext}
+                disabled={!houseType || !purpose || familyMembers.length === 0}
               >
-                {member.label}
-              </Tag>
-            ))}
-          </FamilyMemberTags>
-        </StyledCard>
+                下一步
+              </Button>
+            </NavigationButtons>
+          </motion.div>
 
-        <StyledCard>
-          <Title level={4}>装修大概计划多久完成？</Title>
-          <Slider
-            min={1}
-            max={12}
-            value={duration}
-            onChange={setDuration}
-            marks={{
-              1: '1个月',
-              3: '3个月',
-              6: '半年',
-              12: '1年'
-            }}
-          />
-        </StyledCard>
-
-        <StyledCard>
-          <Title level={4}>心理预算大致在哪个范围？</Title>
-          <Slider
-            min={5}
-            max={50}
-            value={budget}
-            onChange={setBudget}
-            marks={{
-              5: '5万',
-              10: '10万',
-              20: '20万',
-              50: '50万+'
-            }}
-          />
-        </StyledCard>
-
-        <NavigationButtons>
-          <Button
-            size="large"
-            icon={<LeftOutlined />}
-            onClick={() => navigate('/onboarding')}
-          >
-            返回
-          </Button>
-          <Button
-            type="primary"
-            size="large"
-            icon={<RightOutlined />}
-            onClick={handleNext}
-            disabled={!houseType || !purpose || familyMembers.length === 0}
-          >
-            下一步
-          </Button>
-        </NavigationButtons>
-
-        <Text type="secondary" style={{ display: 'block', textAlign: 'center', marginTop: 24 }}>
-          探索之旅：2/5
-        </Text>
-      </ContentBox>
-    </PageContainer>
+          <motion.div variants={itemVariants}>
+            <Text type="secondary" style={{ display: 'block', textAlign: 'center', marginTop: 24 }}>
+              探索之旅：2/5
+            </Text>
+          </motion.div>
+        </ContentBox>
+      </PageContainer>
+    </PageTransition>
   );
 };
 

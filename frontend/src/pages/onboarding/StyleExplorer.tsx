@@ -4,10 +4,11 @@ import { motion } from 'framer-motion';
 import { Typography, Card, Button, Space, Row, Col } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
+import PageTransition from '../../components/PageTransition';
 
 const { Title, Text } = Typography;
 
-const PageContainer = styled.div`
+const PageContainer = styled(motion.div)`
   min-height: 100vh;
   background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
   padding: 24px;
@@ -82,6 +83,26 @@ const SceneCard = styled(Card)<{ selected?: boolean }>`
     border-color: #1890ff;
   }
 `;
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6 },
+  },
+};
 
 const StyleExplorer: React.FC = () => {
   const navigate = useNavigate();
@@ -168,104 +189,110 @@ const StyleExplorer: React.FC = () => {
   };
 
   return (
-    <PageContainer>
-      <ContentBox
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+    <PageTransition>
+      <PageContainer
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
-        <Title level={2} style={{ textAlign: 'center', marginBottom: 40 }}>
-          探索你的风格偏好
-        </Title>
+        <ContentBox
+          variants={itemVariants}
+        >
+          <motion.div variants={itemVariants}>
+            <Title level={2} style={{ textAlign: 'center', marginBottom: 40 }}>
+              探索你的风格偏好
+            </Title>
+          </motion.div>
 
-        <StyledCard>
-          <Title level={4}>选择你喜欢的材质（可多选）</Title>
-          <Row gutter={[16, 16]}>
-            {materials.map(material => (
-              <Col span={6} key={material.key}>
-                <MaterialCard
-                  selected={selectedMaterials.includes(material.key)}
-                  onClick={() => toggleMaterial(material.key)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div style={{ fontSize: 40, marginBottom: 12 }}>{material.icon}</div>
-                  <Text strong>{material.label}</Text>
-                  <Text type="secondary">{material.description}</Text>
-                </MaterialCard>
-              </Col>
-            ))}
-          </Row>
-        </StyledCard>
+          <StyledCard>
+            <Title level={4}>选择你喜欢的材质（可多选）</Title>
+            <Row gutter={[16, 16]}>
+              {materials.map(material => (
+                <Col span={6} key={material.key}>
+                  <MaterialCard
+                    selected={selectedMaterials.includes(material.key)}
+                    onClick={() => toggleMaterial(material.key)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div style={{ fontSize: 40, marginBottom: 12 }}>{material.icon}</div>
+                    <Text strong>{material.label}</Text>
+                    <Text type="secondary">{material.description}</Text>
+                  </MaterialCard>
+                </Col>
+              ))}
+            </Row>
+          </StyledCard>
 
-        <StyledCard>
-          <Title level={4}>选择你喜欢的色彩（可多选）</Title>
-          <ColorPalette>
-            {colors.map(color => (
-              <div key={color.key} style={{ textAlign: 'center' }}>
-                <ColorSwatch
-                  color={color.color}
-                  selected={selectedColors.includes(color.key)}
-                  onClick={() => toggleColor(color.key)}
-                />
-                <Text>{color.label}</Text>
-              </div>
-            ))}
-          </ColorPalette>
-        </StyledCard>
+          <StyledCard>
+            <Title level={4}>选择你喜欢的色彩（可多选）</Title>
+            <ColorPalette>
+              {colors.map(color => (
+                <div key={color.key} style={{ textAlign: 'center' }}>
+                  <ColorSwatch
+                    color={color.color}
+                    selected={selectedColors.includes(color.key)}
+                    onClick={() => toggleColor(color.key)}
+                  />
+                  <Text>{color.label}</Text>
+                </div>
+              ))}
+            </ColorPalette>
+          </StyledCard>
 
-        <StyledCard>
-          <Title level={4}>生活场景偏好</Title>
-          <Space direction="vertical" style={{ width: '100%' }}>
-            {scenes.map(scene => (
-              <div key={scene.key}>
-                <Text strong style={{ marginBottom: 8, display: 'block' }}>
-                  {scene.title}
-                </Text>
-                <Space direction="vertical" style={{ width: '100%' }}>
-                  {scene.options.map(option => (
-                    <SceneCard
-                      key={option.key}
-                      selected={selectedScenes.includes(`${scene.key}-${option.key}`)}
-                      onClick={() => toggleScene(scene.key, option.key)}
-                    >
-                      <Text>{option.label}</Text>
-                    </SceneCard>
-                  ))}
-                </Space>
-              </div>
-            ))}
-          </Space>
-        </StyledCard>
+          <StyledCard>
+            <Title level={4}>生活场景偏好</Title>
+            <Space direction="vertical" style={{ width: '100%' }}>
+              {scenes.map(scene => (
+                <div key={scene.key}>
+                  <Text strong style={{ marginBottom: 8, display: 'block' }}>
+                    {scene.title}
+                  </Text>
+                  <Space direction="vertical" style={{ width: '100%' }}>
+                    {scene.options.map(option => (
+                      <SceneCard
+                        key={option.key}
+                        selected={selectedScenes.includes(`${scene.key}-${option.key}`)}
+                        onClick={() => toggleScene(scene.key, option.key)}
+                      >
+                        <Text>{option.label}</Text>
+                      </SceneCard>
+                    ))}
+                  </Space>
+                </div>
+              ))}
+            </Space>
+          </StyledCard>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 48 }}>
-          <Button
-            size="large"
-            icon={<LeftOutlined />}
-            onClick={() => navigate('/onboarding/basic-info')}
-          >
-            返回
-          </Button>
-          <Button
-            type="primary"
-            size="large"
-            icon={<RightOutlined />}
-            onClick={handleNext}
-            disabled={
-              selectedMaterials.length === 0 ||
-              selectedColors.length === 0 ||
-              selectedScenes.length < 3
-            }
-          >
-            下一步
-          </Button>
-        </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 48 }}>
+            <Button
+              size="large"
+              icon={<LeftOutlined />}
+              onClick={() => navigate('/onboarding/basic-info')}
+            >
+              返回
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              icon={<RightOutlined />}
+              onClick={handleNext}
+              disabled={
+                selectedMaterials.length === 0 ||
+                selectedColors.length === 0 ||
+                selectedScenes.length < 3
+              }
+            >
+              下一步
+            </Button>
+          </div>
 
-        <Text type="secondary" style={{ display: 'block', textAlign: 'center', marginTop: 24 }}>
-          探索之旅：3/5
-        </Text>
-      </ContentBox>
-    </PageContainer>
+          <Text type="secondary" style={{ display: 'block', textAlign: 'center', marginTop: 24 }}>
+            探索之旅：3/5
+          </Text>
+        </ContentBox>
+      </PageContainer>
+    </PageTransition>
   );
 };
 

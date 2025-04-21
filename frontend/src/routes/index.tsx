@@ -1,5 +1,6 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import Layout from '../components/Layout';
 import Welcome from '../pages/onboarding/Welcome';
 import BasicInfo from '../pages/onboarding/BasicInfo';
@@ -13,34 +14,38 @@ import DesignList from '../pages/designs/DesignList';
 import DesignDetail from '../pages/designs/DesignDetail';
 
 const AppRoutes: React.FC = () => {
+  const location = useLocation();
+
   return (
-    <Routes>
-      {/* 默认重定向到引导页 */}
-      <Route path="/" element={<Navigate to="/onboarding" replace />} />
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* 默认重定向到引导页 */}
+        <Route path="/" element={<Navigate to="/onboarding" replace />} />
 
-      {/* 引导页面路由 */}
-      <Route path="/onboarding" element={<Welcome />} />
-      <Route path="/onboarding/basic-info" element={<BasicInfo />} />
-      <Route path="/onboarding/style-explorer" element={<StyleExplorer />} />
-      <Route path="/onboarding/needs-analysis" element={<NeedsAnalysis />} />
-      <Route path="/onboarding/results" element={<Results />} />
+        {/* 引导页面路由 */}
+        <Route path="/onboarding" element={<Welcome />} />
+        <Route path="/onboarding/basic-info" element={<BasicInfo />} />
+        <Route path="/onboarding/style-explorer" element={<StyleExplorer />} />
+        <Route path="/onboarding/needs-analysis" element={<NeedsAnalysis />} />
+        <Route path="/onboarding/results" element={<Results />} />
 
-      {/* 主应用路由 */}
-      <Route element={<Layout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/needs">
-          <Route index element={<NeedsList />} />
-          <Route path=":id" element={<NeedsDetail />} />
+        {/* 主应用路由 */}
+        <Route element={<Layout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/needs">
+            <Route index element={<NeedsList />} />
+            <Route path=":id" element={<NeedsDetail />} />
+          </Route>
+          <Route path="/designs">
+            <Route index element={<DesignList />} />
+            <Route path=":id" element={<DesignDetail />} />
+          </Route>
         </Route>
-        <Route path="/designs">
-          <Route index element={<DesignList />} />
-          <Route path=":id" element={<DesignDetail />} />
-        </Route>
-      </Route>
 
-      {/* 捕获所有其他路由并重定向到引导页 */}
-      <Route path="*" element={<Navigate to="/onboarding" replace />} />
-    </Routes>
+        {/* 捕获所有其他路由并重定向到引导页 */}
+        <Route path="*" element={<Navigate to="/onboarding" replace />} />
+      </Routes>
+    </AnimatePresence>
   );
 };
 

@@ -2,141 +2,137 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Typography, Input, Button, Space } from 'antd';
-import { RightOutlined } from '@ant-design/icons';
+import { RightOutlined, SmileOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
+import PageTransition from '../../components/PageTransition';
 
 const { Title, Text } = Typography;
 
-const WelcomeContainer = styled.div`
+const WelcomeContainer = styled(motion.div)`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+  justify-content: center;
   padding: 24px;
+  background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
 `;
 
 const ContentBox = styled(motion.div)`
   max-width: 600px;
   width: 100%;
   text-align: center;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 48px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-`;
-
-const AnimatedHouse = styled(motion.div)`
-  font-size: 64px;
-  margin-bottom: 24px;
 `;
 
 const StyledInput = styled(Input)`
-  max-width: 300px;
-  margin: 24px auto;
-  height: 40px;
-  border-radius: 20px;
+  width: 300px;
+  height: 50px;
+  font-size: 18px;
+  border-radius: 25px;
   text-align: center;
-  font-size: 16px;
+  margin: 24px 0;
 `;
+
+const StyledButton = styled(Button)`
+  height: 50px;
+  padding: 0 32px;
+  font-size: 18px;
+  border-radius: 25px;
+`;
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6 },
+  },
+};
 
 const Welcome: React.FC = () => {
   const navigate = useNavigate();
   const [name, setName] = useState('');
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.6, ease: 'easeOut' }
-    }
-  };
-
-  const houseVariants = {
-    hidden: { scale: 0.8, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: 'easeOut',
-        delay: 0.2
-      }
-    }
-  };
-
   const handleContinue = () => {
-    if (name) {
-      localStorage.setItem('userName', name);
+    if (name.trim()) {
+      localStorage.setItem('userName', name.trim());
       navigate('/onboarding/basic-info');
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && name) {
+    if (e.key === 'Enter') {
       handleContinue();
     }
   };
 
   return (
-    <WelcomeContainer>
-      <ContentBox
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <AnimatedHouse
-          variants={houseVariants}
+    <PageTransition>
+      <WelcomeContainer>
+        <ContentBox
+          variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          🏠
-        </AnimatedHouse>
+          <motion.div variants={itemVariants}>
+            <Title level={1}>
+              欢迎来到家装梦想家
+              <SmileOutlined style={{ marginLeft: 8, color: '#1890ff' }} />
+            </Title>
+          </motion.div>
 
-        <Title level={2} style={{ marginBottom: 16 }}>
-          你好！准备开始家装之旅了吗？
-        </Title>
+          <motion.div variants={itemVariants}>
+            <Text style={{ fontSize: 18, color: '#666' }}>
+              让我们开始打造你的理想家居空间吧！
+              <br />
+              首先，告诉我该如何称呼你？
+            </Text>
+          </motion.div>
 
-        <Text style={{ fontSize: 16, color: '#666' }}>
-          很多人第一次装修都感到迷茫，这很正常。
-          <br />
-          接下来的10分钟，我们将一起探索你理想中的家。
-          <br />
-          无需专业知识，只需跟随感觉选择。
-        </Text>
+          <motion.div variants={itemVariants}>
+            <StyledInput
+              placeholder="输入你的名字"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyPress={handleKeyPress}
+              autoFocus
+            />
+          </motion.div>
 
-        <StyledInput
-          placeholder="请问如何称呼你？"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyPress={handleKeyPress}
-          size="large"
-        />
+          <motion.div variants={itemVariants}>
+            <Space size="large">
+              <StyledButton
+                type="primary"
+                icon={<RightOutlined />}
+                onClick={handleContinue}
+                disabled={!name.trim()}
+              >
+                开始探索
+              </StyledButton>
+            </Space>
+          </motion.div>
 
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <Text type="secondary">
-            探索之旅：1/5
-          </Text>
-
-          <Button
-            type="primary"
-            size="large"
-            icon={<RightOutlined />}
-            onClick={handleContinue}
-            disabled={!name}
-            style={{
-              height: 48,
-              borderRadius: 24,
-              fontSize: 16,
-              width: 200
-            }}
+          <motion.div
+            variants={itemVariants}
+            style={{ marginTop: 48 }}
           >
-            开始探索
-          </Button>
-        </Space>
-      </ContentBox>
-    </WelcomeContainer>
+            <Text type="secondary">探索之旅：1/5</Text>
+          </motion.div>
+        </ContentBox>
+      </WelcomeContainer>
+    </PageTransition>
   );
 };
 
