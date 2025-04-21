@@ -1,7 +1,11 @@
 [build]
-command = "npm install && npm run build"
+command = "npm run build"
+output_dir = "frontend/build"
 publish = "frontend/build"
 
 [build.environment]
 NODE_VERSION = "18"
 NPM_VERSION = "9"
+
+[site]
+pages_build_output_dir = "frontend/build"
