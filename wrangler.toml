@@ -1,0 +1,7 @@
+[build]
+command = "npm install && npm run build"
+publish = "frontend/build"
+
+[build.environment]
+NODE_VERSION = "18"
+NPM_VERSION = "9"
